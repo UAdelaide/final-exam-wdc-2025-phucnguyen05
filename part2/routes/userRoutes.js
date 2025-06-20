@@ -37,22 +37,35 @@ router.get('/me', (req, res) => {
 
 // POST login (dummy version)
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    const [rows] = await db.query(`
-      SELECT user_id, username, role FROM Users
-      WHERE email = ? AND password_hash = ?
-    `, [email, password]);
-
+    const [rows] = await db.query(
+      `SELECT user_id, username, role FROM Users WHERE username = ? AND password_hash = ?`,
+      [username, password]
+    );
+    //checking if valid inputs
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    res.json({ message: 'Login successful', user: rows[0] });
+    // Store user info in session
+    req.session.user = {
+      user_id: rows[0].user_id,
+      username: rows[0].username,
+      role: rows[0].role
+    };
+
+    // Send response back
+    res.json({ user: req.session.user });
+
   } catch (error) {
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'login not working :(' });
   }
 });
+
+
+
+
 
 module.exports = router;
