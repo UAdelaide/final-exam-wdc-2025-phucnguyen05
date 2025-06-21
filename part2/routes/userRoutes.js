@@ -64,6 +64,15 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// logging out route
+router.post('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ error: 'destroying session failed' });
+    }
+    res.sendStatus(200);
+  });
+});
 
 
 
