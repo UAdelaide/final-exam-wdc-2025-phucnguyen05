@@ -74,6 +74,12 @@ router.post('/logout', (req, res) => {
   });
 });
 
+//get dogs owned given owner_id
+router.get('/getdogs', async (req, res) => {
+  user_id = req.session.user.user_id;
+  [rows] = await db.query(`SELECT dog_id, name FROM Dogs WHERE owner_id = ?`,[user_id]);
+  res.json(rows);
+});
 
 
 
